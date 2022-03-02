@@ -33,69 +33,15 @@ const userSchema = new mongoose.Schema(
             minlength: 7,
             trim: true
         },
-        fcm_token: {
-            type: String,
-            default: ''
-        },
         aboutMe: {
             type: String,
             trim: true,
             default: "I'm a human :)"
         },
-        tags: [
-            {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: 'Tag'
-            }
-        ],
-        questions: [
-            {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: 'Question'
-            }
-        ],
-        answers: [
-            {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: 'Answer'
-            }
-        ],
-        articles: [
-            {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: 'Article'
-            }
-        ],
-        comments: [
-            {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: 'Comment'
-            }
-        ],
-        courses: [
-            {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: 'Course'
-            }
-        ],
-        purchased_courses: [
-            {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: 'Course'
-            }
-        ],
         avatar: {
             type: String,
             default:
                 'https://nkxdcq.bn.files.1drv.com/y4m3SbwCOliC7q3kUMOdQB8SZIUKQnvXhytYte-xK8R-zjbKu9M9a41LVNBWUepL9vd4JHmr7dRkXxPjZ2sdayBweyFrhMlnU8wMrfd53hbWE9hCWqfYRcnMo0DBYBdibs14luZNAh1Oh8pd15Jaa6t9DKK6i4f3fVxaVKvsvJowMqGMfzvZvC-wMtptLF-WypAuJpjRXMLluNJT5DUbo9MSB8R1KRr5QnwNEPyiUZr7kg/Avatar.png'
-        },
-        reputation: {
-            type: Number,
-            default: 0,
-            validate(value) {
-                if (value < 0)
-                    throw new Error('Reputation must be a positive number')
-            }
         },
         tokens: [
             {
