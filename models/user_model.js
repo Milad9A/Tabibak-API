@@ -67,6 +67,18 @@ const userSchema = new mongoose.Schema(
             trim: true,
             required: true
         },
+        consults: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'Consult'
+            }
+        ],
+        subjects: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'Subject'
+            }
+        ],
         tokens: [
             {
                 token: {
