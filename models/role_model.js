@@ -1,6 +1,8 @@
 const Role = {
-    BASIC_USER: 'basic user',
-    ADMIN: 'admin'
+    basicUser: 'Basic User',
+    admin: 'Admin'
 }
+
+Object.freeze(Role)
 
 module.exports = Role

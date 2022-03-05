@@ -3,9 +3,9 @@ const Role = require('../models/role_model')
 
 const UserController = {
     createBasicUser: async (req, res) => {
-        const updates = Object.keys(req.body)
+        const body = Object.keys(req.body)
 
-        const isValidOperation = !updates.includes('role')
+        const isValidOperation = !body.includes('role')
 
         if (!isValidOperation)
             return res.status(400).send({ error: 'Unable to set role' })
@@ -21,30 +21,9 @@ const UserController = {
     },
 
     createAdminUser: async (req, res) => {
-        const updates = Object.keys(req.body)
+        const body = Object.keys(req.body)
 
-        const isValidOperation = !updates.includes('role')
-
-        if (!isValidOperation)
-            return res.status(400).send({ error: 'Unable to set role' })
-
-        try {
-            const user = new User({
-                ...req.body,
-                role: Role.ADMIN,
-            })
-            await user.save()
-            const token = await user.generateAuthToken()
-            res.status(201).send({ user, token })
-        } catch (error) {
-            res.status(400).send(error)
-        }
-    },
-
-    createInstructorUser: async (req, res) => {
-        const updates = Object.keys(req.body)
-
-        const isValidOperation = !updates.includes('role')
+        const isValidOperation = !body.includes('role')
 
         if (!isValidOperation)
             return res.status(400).send({ error: 'Unable to set role' })
@@ -52,7 +31,7 @@ const UserController = {
         try {
             const user = new User({
                 ...req.body,
-                role: Role.INSTRUCTOR,
+                role: Role.admin
             })
             await user.save()
             const token = await user.generateAuthToken()
@@ -70,7 +49,7 @@ const UserController = {
             )
             if (!user)
                 return res.status(401).send({
-                    error: 'Invalid Email or Password',
+                    error: 'Invalid Email or Password'
                 })
 
             const token = await user.generateAuthToken()
@@ -91,7 +70,7 @@ const UserController = {
             await req.user.save()
             res.send()
         } catch (error) {
-            res.status(500).send()
+            res.status(400).send()
         }
     },
 
@@ -101,7 +80,7 @@ const UserController = {
             await req.user.save()
             res.send()
         } catch (error) {
-            res.status(500).send()
+            res.status(400).send()
         }
     },
 
@@ -125,7 +104,7 @@ const UserController = {
             const users = await User.find({}).select({
                 email: 1,
                 name: 1,
-                avatar: 1,
+                avatar: 1
             })
 
             res.send(users)
@@ -139,11 +118,8 @@ const UserController = {
         const allowedUpdates = [
             'name',
             'password',
-            'aboutMe',
-            'reputation',
-            'accept_rate',
-            'badge_counts',
-            'tags',
+            'phoneNumber',
+            'medicalHistory'
         ]
         const isValidOperation = updates.every((update) =>
             allowedUpdates.includes(update)
@@ -167,7 +143,7 @@ const UserController = {
             await req.user.remove()
             res.send(req.user)
         } catch (error) {
-            res.status(500).send(error)
+            res.status(400).send(error)
         }
     },
 
@@ -188,49 +164,7 @@ const UserController = {
         } catch (error) {
             res.status(404).send()
         }
-    },
-
-    uploadAvatar: async (req, res) => {
-        if (!req.file)
-            return res.status(400).send({ error: 'No file was provided' })
-
-        const cloudinary = require('cloudinary').v2
-        cloudinary.config({
-            cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-            api_key: process.env.CLOUDINARY_API_KEY,
-            api_secret: process.env.CLOUDINARY_SECRET,
-        })
-
-        const path = req.file.path
-
-        cloudinary.uploader.upload(path, async function (err, image) {
-            if (err) return res.status(400).send(err)
-            const fs = require('fs')
-            fs.unlinkSync(path)
-            req.user.avatar = image.secure_url
-            await req.user.save()
-            res.send({ avatar: req.user.avatar })
-        })
-    },
-
-    updateMyFCMToken: async (req, res) => {
-        const new_fcm_token = req.body.fcm_token
-
-        if (!new_fcm_token)
-            return res
-                .status(400)
-                .json({ error: 'FCM token was not provided!' })
-
-        try {
-            req.user.fcm_token = new_fcm_token
-
-            await req.user.save()
-
-            res.send()
-        } catch (error) {
-            res.status(400).send(error)
-        }
-    },
+    }
 }
 
 module.exports = UserController

@@ -22,8 +22,6 @@ router.patch('/users/me', auth, UserController.updateUserMe)
 
 router.get('/users/:id', auth, UserController.getUser)
 
-router.patch('/users/update-fcm-token', auth, UserController.updateMyFCMToken)
-
 router.delete('/users/me', auth, UserController.deleteUserMe)
 
 module.exports = router

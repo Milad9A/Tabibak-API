@@ -3,6 +3,7 @@ const validator = require('validator')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')
 const Role = require('./role_model')
+const Gender = require('./gender_model')
 const InvalidEmailOrPasswordError = require('../errors/invalid_email_or_password_error')
 
 const userSchema = new mongoose.Schema(
@@ -12,9 +13,21 @@ const userSchema = new mongoose.Schema(
             required: true,
             trim: true
         },
+        userName: {
+            type: String,
+            required: true,
+            unique: true,
+            trim: true
+        },
         role: {
             type: String,
-            default: Role.BASIC_USER
+            enum: Role,
+            default: Role.basicUser
+        },
+        gender: {
+            type: String,
+            enum: Gender,
+            required: true
         },
         email: {
             type: String,
@@ -27,21 +40,32 @@ const userSchema = new mongoose.Schema(
                     throw new Error('Email is invalid')
             }
         },
+        phoneNumber: {
+            type: String,
+            unique: true,
+            required: true,
+            trim: true,
+            lowercase: true,
+            validate(value) {
+                if (!validator.isMobilePhone(value, ['ar-SY']))
+                    throw new Error(
+                        'Phone number is invalid. Please enter a syrian phone number'
+                    )
+            }
+        },
         password: {
             type: String,
             required: true,
-            minlength: 7,
+            minlength: 8,
             trim: true
         },
-        aboutMe: {
+        birthDate: {
+            type: Date
+        },
+        medicalHistory: {
             type: String,
             trim: true,
-            default: "I'm a human :)"
-        },
-        avatar: {
-            type: String,
-            default:
-                'https://nkxdcq.bn.files.1drv.com/y4m3SbwCOliC7q3kUMOdQB8SZIUKQnvXhytYte-xK8R-zjbKu9M9a41LVNBWUepL9vd4JHmr7dRkXxPjZ2sdayBweyFrhMlnU8wMrfd53hbWE9hCWqfYRcnMo0DBYBdibs14luZNAh1Oh8pd15Jaa6t9DKK6i4f3fVxaVKvsvJowMqGMfzvZvC-wMtptLF-WypAuJpjRXMLluNJT5DUbo9MSB8R1KRr5QnwNEPyiUZr7kg/Avatar.png'
+            required: true
         },
         tokens: [
             {
@@ -63,7 +87,6 @@ userSchema.methods.toJSON = function () {
 
     delete userObject.password
     delete userObject.tokens
-    delete userObject.fcm_token
 
     return userObject
 }
