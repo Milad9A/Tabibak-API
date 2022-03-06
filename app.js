@@ -30,6 +30,7 @@ app.use(function (req, res, next) {
 
 // Routes
 app.use(require('./routes/user_route'))
+app.use(require('./routes/subject_route'))
 
 const PORT = process.env.PORT || 3000
 
