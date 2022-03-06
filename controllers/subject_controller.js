@@ -1,6 +1,4 @@
-const Role = require('../models/role_model')
 const Subject = require('../models/subject_model')
-const User = require('../models/user_model')
 
 const SubjectController = {
     createSubject: async (req, res) => {
@@ -69,9 +67,6 @@ const SubjectController = {
 
             if (!subject) return res.status(404).send()
 
-            if (subject.user !== req.user._id && req.user.role !== Role.admin)
-                res.status(403).send()
-
             updates.forEach((update) => (subject[update] = req.body[update]))
 
             await subject.save()
@@ -96,9 +91,11 @@ const SubjectController = {
 
             await req.user.save()
 
+            await subject.populate('user')
+
             res.send(subject)
         } catch (error) {
-            res.status(500).send()
+            res.status(400).send()
         }
     }
 }
